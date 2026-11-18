@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing | Auction Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        body { 
+            background: #020617; 
+            color: #f8fafc; 
+            font-family: 'Poppins', sans-serif; 
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 80px; /* Space for Top Nav */
+        }
+
+        /* --- TOP NAV & LANG SWITCH --- */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: rgba(2, 6, 23, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .btn-home {
+            color: #fbbf24;
+            text-decoration: none;
+            font-weight: 600;
+            border: 1px solid #fbbf24;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+
+        .lang-switch {
+            display: flex;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 50px;
+            border: 1px solid #fbbf24;
+            padding: 2px;
+        }
+
+        .lang-btn {
+            border: none;
+            background: transparent;
+            color: #fbbf24;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .lang-btn.active {
+            background: #fbbf24;
+            color: #000;
+        }
+
+        /* --- THE BIG OFFER BOX --- */
+        .offer-box {
+            background: #fbbf24; /* Primary Yellow */
+            color: #000;
+            padding: 20px;
+            border-radius: 15px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            border: 3px solid #fff;
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.7);
+            margin-bottom: 30px;
+            display: inline-block;
+            width: 100%;
+            max-width: 600px;
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .main-card {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px 20px;
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        /* --- BULLET POINTS --- */
+        .point-list {
+            text-align: left;
+            list-style: none;
+            padding: 0;
+            margin: 30px auto;
+            max-width: 500px;
+        }
+
+        .point-item {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .point-item i {
+            color: #fbbf24;
+            margin-top: 5px;
+        }
+
+        /* --- BUTTONS --- */
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+            font-weight: 700;
+            padding: 14px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .btn-register {
+            background: transparent;
+            color: #fbbf24;
+            border: 2px solid #fbbf24;
+            font-weight: 700;
+            padding: 14px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-flex;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (min-width: 768px) {
+            .btn-whatsapp, .btn-register {
+                width: auto;
+                margin-bottom: 0;
+            }
+            .btn-register { margin-left: 15px; }
+            .offer-box { font-size: 1.5rem; }
+            .main-card { padding: 50px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav">
+        <a href="/" class="btn-home">HOME</a>
+        <div class="lang-switch">
+            <button class="lang-btn active" onclick="updateLang('en', this)">EN</button>
+            <button class="lang-btn" onclick="updateLang('mr', this)">मराठी</button>
+            <button class="lang-btn" onclick="updateLang('hi', this)">हिंदी</button>
+        </div>
+    </div>
+
+    <div class="container px-3">
+        <div class="main-card shadow-lg">
+            
+            <div class="offer-box" id="offer-text">
+                LAUNCH OFFER: FIRST 5 TOURNAMENTS FREE!
+            </div>
+
+            <h2 class="fw-bold mb-4" id="main-title">Pricing Policy</h2>
+            
+            <ul class="point-list" id="point-list">
+                </ul>
+
+            <div class="mt-4">
+                <a href="https://wa.me/918605225879?text=Pricing inquiry" class="btn-whatsapp">
+                    <i class="fab fa-whatsapp fs-4"></i> <span id="wa-btn">Contact Admin</span>
+                </a>
+                <a href="/tournaments" class="btn btn-register" id="reg-btn">Register Now</a>
+            </div>
+            
+            <p class="mt-4 text-secondary small" id="footer-text">*T&C Apply. Contact for final price.</p>
+        </div>
+    </div>
+
+    <script>
+        const content = {
+            en: {
+                offer: "LAUNCH OFFER: FIRST 5 TOURNAMENTS FREE!",
+                title: "How Pricing Works?",
+                wa: "Contact Admin",
+                reg: "Register Now",
+                footer: "*Final price decided after discussion.",
+                points: [
+                    "No fixed plans. Pay only for what you use.",
+                    "Price depends on number of Teams & Players.",
+                    "Price depends on technical support required.",
+                    "Register your tournament to get a final quote.",
+                    "Special discounts for local village leagues."
+                ]
+            },
+            mr: {
+                offer: "ऑफर: पहिले ५ टूर्नामेंट्स पूर्णपणे मोफत!",
+                title: "दर कसे ठरतात?",
+                wa: "ॲडमिनशी बोला",
+                reg: "नोंदणी करा",
+                footer: "*अंतिम किंमत चर्चेनंतर ठरवली जाईल.",
+                points: [
+                    "ठराविक प्लॅन्स नाहीत. गरजेनुसार पैसे द्या.",
+                    "किंमत टीम्स आणि खेळाडूंच्या संख्येवर ठरेल.",
+                    "किंमत तांत्रिक मदतीच्या गरजेवर अवलंबून असेल.",
+                    "फायनल रेटसाठी तुमची टूर्नामेंट रजिस्टर करा.",
+                    "ग्रामीण भागातील लीगसाठी विशेष सवलत."
+                ]
+            },
+            hi: {
+                offer: "ऑफर: पहले 5 टूर्नामेंट बिल्कुल फ्री!",
+                title: "कीमत कैसे तय होती है?",
+                wa: "एडमिन से बात करें",
+                reg: "रजिस्टर करें",
+                footer: "*अंतिम कीमत चर्चा के बाद तय होगी।",
+                points: [
+                    "कोई फिक्स्ड प्लान नहीं। जरूरत के हिसाब से पैसे दें।",
+                    "कीमत टीम और खिलाड़ियों की संख्या पर निर्भर है।",
+                    "कीमत तकनीकी सहायता की जरूरत पर निर्भर है।",
+                    "फाइनल रेट के लिए अपनी टूर्नामेंट रजिस्टर करें।",
+                    "ग्रामीण लीग के लिए विशेष छूट उपलब्ध है।"
+                ]
+            }
+        };
+
+        function updateLang(lang, btn) {
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            document.getElementById('offer-text').innerText = content[lang].offer;
+            document.getElementById('main-title').innerText = content[lang].title;
+            document.getElementById('wa-btn').innerText = content[lang].wa;
+            document.getElementById('reg-btn').innerText = content[lang].reg;
+            document.getElementById('footer-text').innerText = content[lang].footer;
+
+            const list = document.getElementById('point-list');
+            list.innerHTML = "";
+            content[lang].points.forEach(p => {
+                list.innerHTML += `<li class="point-item"><i class="fas fa-check-circle"></i> <span>${p}</span></li>`;
+            });
+        }
+
+        // Initial Load
+        updateLang('en', document.querySelector('.lang-btn.active'));
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,257 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<style>
+    body {
+        background-color: #0f172a;
+    }
+    .hero-section {
+        height: 300px;
+        background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), url("/static/cover.jpg");
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border: 0px solid rgba(251, 191, 36, 0.3);
+        margin-bottom: 40px;
+        text-align: center;
+    }
+    .hero-section h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        color: #fbbf24;
+        text-transform: uppercase;
+        letter-spacing: 5px;
+        margin-bottom: 10px;
+    }
+    .hero-section p {
+        color: #ffffff;
+        font-style: italic;
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+    }
+
+    .neon-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        color: #fbbf24;
+        text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .btn-neon-add {
+        background: transparent;
+        border: 2px solid #fbbf24;
+        color: #f9f907;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 12px 30px;
+        transition: 0.3s;
+        border-radius: 0;
+    }
+    .btn-neon-add:hover {
+        background: #fbbf24;
+        color: #000;
+        box-shadow: 0 0 25px #fbbf24;
+        transform: translateY(-3px);
+    }
+
+    .tournament-card {
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(251, 191, 36, 0.2);
+        border-radius: 0;
+        transition: 0.4s;
+    }
+    .tournament-card:hover {
+        border-color: #fbbf24;
+        transform: scale(1.02);
+        background: rgba(30, 41, 59, 0.8);
+    }
+    .card-logo {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border: 2px solid #fbbf24;
+        padding: 3px;
+        background: #0f172a;
+    }
+
+    .form-control-neon {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 1px solid #ccc !important;
+        color: #000 !important;
+        border-radius: 0;
+        font-weight: 500;
+    }
+    .form-control-neon:focus {
+        border-color: #fbbf24 !important;
+        background: #ffffff !important;
+        box-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+        outline: none;
+    }
+    .form-control-neon::placeholder {
+        color: #666 !important;
+    }
+
+    .modal-content {
+        background: #0f172a !important;
+        border: 2px solid #39fb24 !important;
+        border-radius: 0;
+    }
+</style>
+
+<div class="hero-section shadow-lg" style="position: relative; overflow: hidden;">
+    
+    <a href="/" class="btn btn-outline-light btn-sm" 
+       style="position: absolute; top: 15px; left: 15px; border-radius: 0; font-weight: 600; font-size: 12px; z-index: 10;">
+        🏠 
+    </a>
+
+    <h1>create and manage your own tournaments</h1>
+    <p>"Great moments are born from great opportunities."</p>
+    <h5 class="text-light opacity-75"> Click on create New Tournament button </h5><br>
+    
+    <button type="button" class="btn btn-neon-add" data-bs-toggle="modal" data-bs-target="#addTournamentModal">
+        + Create New Tournament
+    </button>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white border-end-0" style="border-radius: 0;">
+                        <i class="fas fa-search text-muted"></i>
+                    </span>
+                    <input type="text" id="tournamentSearch" class="form-control border-start-0 ps-0" 
+                           style="border-radius: 0; height: 45px;"
+                           placeholder="Search tournament by name..." onkeyup="searchTournaments()">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addTournamentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-warning fw-bold">🏆 TOURNAMENT CONFIGURATION</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="tournamentForm" action="/add-tournament" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small text-warning">Tournament Name *</label>
+                            <input type="text" name="name" class="form-control form-control-neon" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small text-warning">Tournament Logo</label>
+                            <input type="file" name="logo" class="form-control form-control-neon" accept="image/*">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small text-warning">City *</label>
+                            <input type="text" name="city" class="form-control form-control-neon" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small text-warning">Organiser Name *</label>
+                            <input type="text" name="organiser" class="form-control form-control-neon" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small text-warning">Mobile number *</label>
+                            <input type="number" name="mobile" placeholder="mobile/ मोबाईल नंबर" class="form-control form-control-neon" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small text-light">Start Date</label>
+                            <input type="date" name="start_date" class="form-control form-control-neon">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small text-light">End Date</label>
+                            <input type="date" name="end_date" class="form-control form-control-neon">
+                        </div>
+                        <hr class="border-secondary my-4">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small text-info">Admin Username *</label>
+                            <input type="text" name="username" class="form-control form-control-neon" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small text-info">Admin Password *</label>
+                            <input type="password" name="password" class="form-control form-control-neon" required>
+                        </div>
+                        <hr class="border-secondary my-4">
+                        <div class="col-md-12 mb-3 text-center">
+                            <h6 class="text-warning">Auction & Purse Settings</h6>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label small text-light">Team Purse Value (₹)</label>
+                            <input type="number" name="purse" class="form-control form-control-neon" placeholder="e.g. 50000">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="small text-light">Batter Price</label>
+                            <input type="number" name="bat_p" class="form-control form-control-neon" placeholder="150">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="small text-light">Bowler Price</label>
+                            <input type="number" name="bowl_p" class="form-control form-control-neon" placeholder="100">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="small text-light">All-Rounder Price</label>
+                            <input type="number" name="ar_p" class="form-control form-control-neon" placeholder="200">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="submit" class="btn btn-warning w-100 py-3 fw-bold rounded-0">
+                        CREATE & START TOURNAMENT
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row px-3">
+{% for t in tournaments %}
+  <div class="col-md-3 mb-4 tournament-item"> <div class="card tournament-card h-100">
+      <div class="card-body d-flex flex-column text-center p-4">
+        
+        {% if t.logo %}
+           <img src="/static/uploads/logos/{{t.logo}}" class="mb-4 rounded-circle mx-auto card-logo">
+        {% else %}
+           <div class="mb-4 rounded-circle mx-auto card-logo d-flex align-items-center justify-content-center bg-dark">
+               <span class="text-warning fw-bold">NO LOGO</span>
+           </div>
+        {% endif %}
+
+        <h4 class="text-white mb-1 tournament-name" style="font-family: Montserrat; font-weight: 700;">{{t.name}}</h4> <p class="small text-secondary mb-4"><i class="fas fa-map-marker-alt text-warning"></i> {{t.city or 'General'}}</p>
+
+        <div class="mt-auto">
+            <a href="/dashboard/{{t.id}}" class="btn btn-warning w-100 py-2 fw-bold text-dark rounded-0">Open Dashboard</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+{% endfor %}
+</div>
+
+<script>
+function searchTournaments() {
+    let input = document.getElementById('tournamentSearch').value.toLowerCase();
+    let cards = document.querySelectorAll('.tournament-item');
+
+    cards.forEach(card => {
+        let name = card.querySelector('.tournament-name').innerText.toLowerCase();
+        if (name.includes(input)) {
+            card.style.display = ""; 
+        } else {
+            card.style.display = "none";
+        }
+    });
+}
+</script>
+
+{% endblock %}

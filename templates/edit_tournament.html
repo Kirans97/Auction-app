@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Tournament | {{ tournament.name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        body {
+            background-color: #0f172a; 
+            color: #f8fafc;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .edit-card {
+            background: #1e293b; 
+            border-radius: 12px;
+            border: 1px solid #334155;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .card-header {
+            background: rgba(30, 41, 59, 0.6);
+            border-bottom: 1px solid #334155;
+            padding: 18px 20px;
+        }
+
+        .form-label-custom {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fbbf24; /* Warning/Gold color */
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            display: block;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control-neon {
+            background: #ffffff !important;
+            border: 1px solid #fbbf24 !important;
+            color: #000 !important;
+            font-weight: 600;
+            padding: 10px 12px;
+            border-radius: 6px;
+        }
+
+        .form-control-neon:focus {
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+        }
+
+        hr {
+            border-top: 1px solid #334155;
+            opacity: 1;
+            margin: 25px 0;
+        }
+
+        .settings-title {
+            color: #38bdf8; /* Info Blue */
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .card-footer {
+            background: rgba(30, 41, 59, 0.6);
+            border-top: 1px solid #334155;
+            padding: 20px;
+        }
+
+        .btn-update {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: none;
+            font-weight: 700;
+            padding: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-cancel {
+            border: 1px solid #475569;
+            color: #f1f5f9;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .card-header h5 { font-size: 1rem; }
+            .card-footer { flex-direction: column; }
+            .btn-update, .btn-cancel { width: 100%; }
+            .col-md-4 { width: 100%; } /* Prices stack on mobile */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-2 mb-4">
+    <div class="edit-card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-warning">🏆 Edit Tournament: {{ tournament.name }}</h5>
+            <a href="/tournaments" class="text-white text-decoration-none"><i class="fas fa-times fa-lg"></i></a>
+        </div>
+        
+        <form action="/edit-tournament/{{ tournament.id }}" method="POST" enctype="multipart/form-data">
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom">Tournament Name *</label>
+                        <input type="text" name="name" class="form-control form-control-neon" value="{{ tournament.name }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom">Tournament Logo</label>
+                        <input type="file" name="logo" class="form-control form-control-neon" accept="image/*">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom">City *</label>
+                        <input type="text" name="city" class="form-control form-control-neon" value="{{ tournament.city }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom">Organiser Name *</label>
+                        <input type="text" name="organiser" class="form-control form-control-neon" value="{{ tournament.organiser }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom">Mobile Number *</label>
+                        <input type="number" name="mobile" value="{{ tournament.mobile }}" class="form-control form-control-neon" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom">Start Date</label>
+                        <input type="date" name="start_date" class="form-control form-control-neon" value="{{ tournament.start_date }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom">End Date</label>
+                        <input type="date" name="end_date" class="form-control form-control-neon" value="{{ tournament.end_date }}">
+                    </div>
+
+                    <div class="col-12"><hr></div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom">Admin Username *</label>
+                        <input type="text" name="username" class="form-control form-control-neon" value="{{ tournament.username }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom">Admin Password *</label>
+                        <input type="password" name="password" class="form-control form-control-neon" value="{{ tournament.password }}" required>
+                    </div>
+
+                    <div class="col-12"><hr></div>
+
+                    <div class="col-12 mb-2">
+                        <h6 class="settings-title"><i class="fas fa-coins me-2"></i> Auction & Purse Settings</h6>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="form-label-custom">Team Purse Value (₹)</label>
+                        <input type="number" name="purse" class="form-control form-control-neon" value="{{ tournament.total_purse }}">
+                    </div>
+                    <div class="col-md-4 col-12 mb-3">
+                        <label class="form-label-custom">Batter Base Price</label>
+                        <input type="number" name="bat_p" class="form-control form-control-neon" value="{{ tournament.batter_price }}">
+                    </div>
+                    <div class="col-md-4 col-12 mb-3">
+                        <label class="form-label-custom">Bowler Base Price</label>
+                        <input type="number" name="bowl_p" class="form-control form-control-neon" value="{{ tournament.bowler_price }}">
+                    </div>
+                    <div class="col-md-4 col-12 mb-3">
+                        <label class="form-label-custom">All-Rounder Base Price</label>
+                        <input type="number" name="ar_p" class="form-control form-control-neon" value="{{ tournament.allrounder_price }}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-update flex-grow-1">
+                    Update Tournament
+                </button>
+                <a href="/tournaments" class="btn btn-cancel py-2 px-4">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

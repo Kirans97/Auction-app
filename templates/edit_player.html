@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h5 class="mb-3 text-white">Edit Player</h5>
+
+<!-- ========= COMPACT EDIT FORM ========= -->
+
+<div class="mb-3">
+
+<form method="post"
+      enctype="multipart/form-data"
+      class="d-flex gap-2 align-items-center small flex-wrap">
+
+  <!-- Name -->
+
+<label class="text-white small mb-0">Name</label> <input class="form-control form-control-sm"
+      style="width:120px"
+      name="name"
+      value="{{player.name}}"
+      required>
+
+  <!-- Role -->
+
+<label class="text-white small mb-0">Role</label> <select class="form-select form-select-sm"
+       style="width:110px"
+       name="role">
+
+```
+<option {% if player.role=='Batter' %}selected{% endif %}>Batter</option>
+<option {% if player.role=='Bowler' %}selected{% endif %}>Bowler</option>
+<option {% if player.role=='All Rounder' %}selected{% endif %}>All Rounder</option>
+```
+
+  </select>
+
+  <!-- Batting -->
+
+<label class="text-white small mb-0">Bat</label> <select class="form-select form-select-sm"
+       style="width:90px"
+       name="batting">
+
+```
+<option {% if player.batting=='Right' %}selected{% endif %}>Right</option>
+<option {% if player.batting=='Left' %}selected{% endif %}>Left</option>
+```
+
+  </select>
+
+  <!-- Bowling -->
+
+<label class="text-white small mb-0">Bowl</label> <select class="form-select form-select-sm"
+       style="width:90px"
+       name="bowling">
+
+```
+<option {% if player.bowling=='Right' %}selected{% endif %}>Right</option>
+<option {% if player.bowling=='Left' %}selected{% endif %}>Left</option>
+```
+
+  </select>
+
+  <!-- Price -->
+
+<label class="text-white small mb-0">₹</label> <input class="form-control form-control-sm"
+      style="width:90px"
+      name="price"
+      value="{{player.base_price}}"
+      required>
+
+  <!-- Image -->
+
+<input type="file"
+      class="form-control form-control-sm"
+      style="width:160px"
+      name="image">
+
+  <!-- Preview -->
+
+{% if player.image %} <img src="{{ url_for('static', filename='uploads/' + player.image) }}"
+    width="32"
+    height="32"
+    style="border-radius:50%;object-fit:cover;">
+{% endif %}
+
+  <!-- Buttons -->
+
+<button type="submit" class="btn btn-success btn-sm">Save</button> <a href="/players" class="btn btn-secondary btn-sm">Discard</a>
+
+</form>
+
+</div>
+<!-- ================================= -->
+
+{% endblock %}

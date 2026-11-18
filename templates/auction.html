@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auction Mobile Pro</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .mobile-viewport {
+            width: 100%;
+            max-width: 450px;
+            background: #00050a;
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #1c2d4d;
+            border-right: 1px solid #1c2d4d;
+        }
+
+        .tournament-header {
+            background: white;
+            color: black;
+            text-align: center;
+            padding: 10px;
+            font-weight: 700;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid #198754;
+        }
+
+        .player-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .player-img-wrap {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 1px solid #010a10;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .player-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+        .info-stack { flex-grow: 1; display: flex; flex-direction: column; gap: 5px; }
+        .data-tag { background:rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; font-size: 0.90rem; font-weight: 600; }
+
+        .bid-bar {
+            background: #0f1217;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .teams-scroll-area {
+            background: #e4e5e8;
+            border-radius: 12px;
+            padding: 10px;
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            max-height: 400px;
+        }
+
+        .team-click-card {
+            background: #000;
+            border: 1px solid #2c3e50;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .team-click-card:active { background: #1a2a4a; }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .side-col { display: flex; flex-direction: column; gap: 8px; }
+        .btn-side { background: #0af0d5; color: white; border: none; padding: 12px 5px; border-radius: 8px; font-weight: 600; font-size: 0.75rem; text-decoration: none; text-align: center; }
+
+        .sell-btn-circle {
+            width: 85px;
+            height: 85px;
+            background: #16b70b;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto;
+        }
+
+        /* --- ६. सुधारलेले काउंट बटन्स (3 in 1 Row) --- */
+        .stats-btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr; /* ३ समान कॉलम */
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .stat-btn {
+            padding: 10px 2px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.7rem;
+            color: white;
+        }
+        .bg-sold { background: #198754; }    /* Green */
+        .bg-unsold { background: #dc3545; }  /* Red */
+        .bg-pending { background: #6c757d; } /* Grey */
+
+        .dash-footer-btn {
+            background: white;
+            color: black;
+            text-align: center;
+            padding: 8px;
+            font-weight: 700;
+            border-radius: 6px;
+            text-decoration: none;
+            display: block;
+            border: 2px solid #198754;
+        }
+
+        .loader-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .progress-track { width: 70%; height: 5px; background: #1e293b; border-radius: 10px; overflow: hidden; margin-top: 10px; }
+        .progress-fill { width: 0%; height: 100%; background: #f1c40f; transition: width 3s linear; }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-viewport">
+        <div id="loading-screen" class="loader-overlay">
+            <h5 class="text-warning fw-bold">PROCESSING...</h5>
+            <div class="progress-track"><div id="progress-bar" class="progress-fill"></div></div>
+        </div>
+
+        <div class="tournament-header"></div>
+
+        <div id="auction-center-box">
+            {% if player %}
+            <div class="player-card" id="current-player-id" data-id="{{ player.id }}">
+                <div class="player-img-wrap">
+                    <img src="{{ url_for('static', filename='uploads/players/' + player.image) if player.image else '/static/default.png' }}">
+                </div>
+                <div class="info-stack">
+                    <div class="data-tag"> {{ player.name }}</div>
+                    <div class="data-tag"> {{ player.role }}</div>
+                    <div class="data-tag"> {{ player.current_price or player.base_price }}</div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-4 bg-dark rounded-3 mb-3">
+                <p class="mb-2">Auction Finished / No Player</p>
+                <a href="/create-bid/{{t_id}}" class="btn btn-sm btn-success">START NEXT</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="bid-bar">
+            bid BY  : <span id="current-bidder-display" class="text-warning">{{ player.last_bid_team_name if player and player.last_bid_team_name != 'None' else 'WAITING' }}</span>
+        </div>
+
+        <div class="teams-scroll-area" id="team-purse-display">
+            {% for team in teams %}
+            <div class="team-click-card" onclick="quickBid('{{ team.id }}')">
+                <div class="fw-bold" style="font-size: 0.8rem;">{{ team.short_name }}</div>
+                <div class="text-warning fw-bold" style="font-size: 0.9rem;">₹{{ team.purse }}</div>
+                <div style="font-size: 0.6rem; color: #0dcaf0;">Max: ₹{{ team.max_allowed }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="action-grid" id="sidebar-right">
+            <div class="side-col">
+                <a href="/unsold/{{player.id if player else 0}}/{{t_id}}" class="btn-side" style="background: #6c757d;" onclick="return unsoldDelay(event)">UNSOLD</a>
+                <button class="btn-side">PAUSE</button>
+            </div>
+
+            <button type="button" class="sell-btn-circle" onclick="sellDelay('{{player.id if player else 0}}','{{t_id}}')" {% if not last_team %}disabled{% endif %}>SELL</button>
+
+            <div class="side-col">
+                <a href="/undo-auction/{{t_id}}" class="btn-side">UNDO</a>
+                <a href="/reset-auction/{{t_id}}" class="btn-side" style="background: #dc3545;" onclick="return confirm('Reset?')">RESET</a>
+            </div>
+        </div>
+
+        <div id="sidebar-left">
+            <div class="stats-btn-group">
+                <div class="stat-btn bg-sold">SOLD: {{ msold_count }}</div>
+                <div class="stat-btn bg-unsold">UNSOLD: {{ unsold_count }}</div>
+                <div class="stat-btn bg-pending">LEFT: {{ pending_count }}</div>
+            </div>
+            <a href="/dashboard/{{t_id}}" class="dash-footer-btn">DASHBOARD</a>
+        </div>
+    </div>
+
+    <script>
+        let isWaiting = false;
+        let polling;
+
+        function quickBid(teamId) {
+            const playerEl = document.getElementById('current-player-id');
+            const playerId = playerEl ? playerEl.getAttribute('data-id') : 'none';
+            if (playerId === 'none' || isWaiting) return;
+            fetch(`/admin-place-bid/${playerId}/${teamId}`, { method: 'POST' });
+        }
+
+        function startLoader(callback){
+            isWaiting = true;
+            if(polling) clearInterval(polling);
+            document.getElementById("loading-screen").style.display = "flex";
+            const bar = document.getElementById("progress-bar");
+            bar.style.transition = "none"; bar.style.width = "0%";
+            setTimeout(()=>{ bar.style.transition = "width 3s linear"; bar.style.width = "100%"; },50);
+            setTimeout(callback, 3000);
+        }
+
+        function sellDelay(playerId, tId){
+            if(playerId === '0') return;
+            startLoader(() => { window.location.href = "/sell-player/"+playerId+"/"+tId; });
+        }
+
+        function unsoldDelay(e){
+            e.preventDefault();
+            const url = e.currentTarget.href;
+            if(url.includes('/0/')) {
+                alert("No active player!");
+                return;
+            }
+            startLoader(() => { window.location.href = url; });
+        }
+
+        polling = setInterval(function(){
+            if(isWaiting) return;
+            fetch(window.location.href, { cache: "no-store" })
+            .then(res => res.text())
+            .then(html => {
+                let doc = new DOMParser().parseFromString(html,'text/html');
+                ['sidebar-left', 'sidebar-right', 'team-purse-display', 'auction-center-box', 'current-bidder-display'].forEach(id => {
+                    let oldEl = document.getElementById(id);
+                    let newEl = doc.getElementById(id);
+                    if(oldEl && newEl) oldEl.innerHTML = newEl.innerHTML;
+                });
+            }).catch(e => console.log("Polling error"));
+        }, 2000);
+    </script>
+</body>
+</html>

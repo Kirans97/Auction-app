@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Success</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background: #0f172a;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .success-box {
+            /* Fire Gradient Background */
+            background: linear-gradient(135deg, #f97316 0%, #dc2626 50%, #991b1b 100%);
+            padding: 40px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(220, 38, 38, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .icon-circle {
+            width: 70px;
+            height: 70px;
+            background: white;
+            color: #dc2626;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            margin: 0 auto 20px;
+        }
+
+        h2 { color: white; margin-bottom: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        p { color: rgba(255, 255, 255, 0.9); margin-bottom: 25px; font-size: 0.95rem; line-height: 1.5; }
+
+        .lang-btn {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            margin-bottom: 20px;
+        }
+        .lang-btn.active { background: white; color: #dc2626; font-weight: bold; }
+
+        /* WhatsApp Button - Limited Width */
+        .wa-button {
+            background: #25d366;
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            font-size: 0.9rem;
+            width: auto; /* रुंदी कमी केली */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .wa-button:hover { background: #1faf55; transform: scale(1.05); color: white; }
+
+        /* Back to Home Button - Outside the box */
+        .btn-home {
+            margin-top: 25px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+        .btn-home:hover { color: #f97316; }
+
+    </style>
+</head>
+<body>
+
+    <div class="success-box">
+        <div class="icon-circle">
+            <i class="fas fa-trophy"></i>
+        </div>
+
+        <div id="lang-toggle">
+            <button class="lang-btn active" id="btn-en" onclick="setLang('en')">English</button>
+            <button class="lang-btn" id="btn-mr" onclick="setLang('mr')">मराठी</button>
+        </div>
+
+        <div id="text-en">
+            <h2>Success!</h2>
+            <p>Tournament submitted successfully! Admin will review and contact you shortly. Please message admin to approve it now.</p>
+            <a href="https://wa.me/917020579020?text=Hi Admin, please approve my tournament." class="wa-button">
+                <i class="fab fa-whatsapp"></i> MESSAGE ADMIN
+            </a>
+        </div>
+
+        <div id="text-mr" style="display: none;">
+            <h2>यशस्वी!</h2>
+            <p>टूर्नामेंट यशस्वीरित्या सबमिट झाली आहे! ॲडमिन लवकरच संपर्क साधतील. कृपया त्वरित अप्रुव्हलसाठी मेसेज करा.</p>
+            <a href="https://wa.me/917020579020?text=नमस्कार ॲडमिन, माझी टूर्नामेंट अप्रुव्ह करा." class="wa-button">
+                <i class="fab fa-whatsapp"></i> ॲडमिनला मेसेज करा
+            </a>
+        </div>
+    </div>
+
+    <a href="/" class="btn-home">
+        <i class="fas fa-arrow-left"></i> Back to Home Page
+    </a>
+
+    <script>
+        function setLang(lang) {
+            const en = document.getElementById('text-en');
+            const mr = document.getElementById('text-mr');
+            const btnEn = document.getElementById('btn-en');
+            const btnMr = document.getElementById('btn-mr');
+
+            if(lang === 'mr') {
+                en.style.display = 'none'; mr.style.display = 'block';
+                btnMr.classList.add('active'); btnEn.classList.remove('active');
+            } else {
+                en.style.display = 'block'; mr.style.display = 'none';
+                btnEn.classList.add('active'); btnMr.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

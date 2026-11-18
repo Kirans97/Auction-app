@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{ team.name }} | Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.css">
+    <style>
+        :root {
+            --primary: {{ team.theme_color or '#3b82f6' }};
+            --glass: rgba(255, 255, 255, 0.95);
+            --text-main: #1e293b;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 10px; /* मोबाईलवर कमी पॅडिंग */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* वरून सुरुवात */
+            min-height: 100vh;
+            background: linear-gradient(135deg, {{ team.theme_color }}33 0%, #f8fafc 100%);
+            box-sizing: border-box;
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 420px;
+            background: #000000;
+            padding: 15px; /* मोबाईलसाठी कमी केलं */
+            border-radius: 24px; /* थोडे कमी राऊंडेड मोबाईलसाठी */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.8);
+            height: auto;
+            backdrop-filter: blur(10px);
+            box-sizing: border-box;
+        }
+
+        .top-bar { 
+            display: grid; 
+            grid-template-columns: 1fr auto; 
+            gap: 10px; 
+            margin-bottom: 15px; 
+        }
+
+        .team-box { 
+            background: linear-gradient(135deg, var(--primary), {{ team.theme_color }}dd);
+            color: white; padding: 12px; border-radius: 12px; 
+            font-weight: 700; text-align: center; font-size: 1rem;
+            box-shadow: 0 4px 12px {{ team.theme_color }}44;
+            text-transform: uppercase;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .logout-btn { 
+            background: #fee2e2; color: #ef4444; padding: 12px 15px; 
+            border-radius: 12px; text-decoration: none; font-weight: 600;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .nav-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .nav-item { 
+            background: white; color: var(--text-main); padding: 10px; 
+            border-radius: 12px; text-decoration: none; flex: 1; 
+            text-align: center; font-weight: 600; border: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .balance-box { 
+            background: var(--text-main); color: white; padding: 15px; 
+            border-radius: 16px; text-align: center; margin-bottom: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        .balance-inner { font-size: 1.4rem; font-weight: 800; color: #fbbf24; }
+
+        /* मोबाईलवर प्लेयर कार्ड आणि स्टॅट्स एकाखाली एक किंवा फ्लेक्सिबल */
+        .main-content { 
+            display: flex; 
+            flex-direction: row; /* आडवेच ठेवलेत पण साइज नीट केली */
+            gap: 10px; 
+            margin-bottom: 20px; 
+        }
+        
+        .player-card { 
+            flex: 1.2;
+            background: white; padding: 10px; border-radius: 16px; text-align: center; border: 1px solid #f1f5f9;
+        }
+        .player-img { 
+            width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; 
+            margin-bottom: 8px; background: #f8fafc; 
+        }
+
+        .stats-stack { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .stat-box { background: #f8fafc; padding: 10px 5px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; }
+        .stat-label { font-size: 0.6rem; color: #64748b; text-transform: uppercase; display: block; }
+        .stat-value { font-size: 0.85rem; font-weight: 700; color: var(--primary); word-break: break-all; }
+
+        .next-bid-info {
+            text-align: center; margin-bottom: 15px; padding: 12px;
+            background: {{ team.theme_color }}11; border-radius: 12px;
+            border: 1px dashed var(--primary);
+        }
+
+        .final-bid-btn { 
+            background: linear-gradient(135deg, var(--primary), {{ team.theme_color }}ee);
+            color: white; border: none; padding: 18px; border-radius: 16px; 
+            font-weight: 800; font-size: 1.2rem; width: 100%; cursor: pointer; 
+            box-shadow: 0 8px 15px {{ team.theme_color }}44;
+            transition: 0.2s;
+            -webkit-tap-highlight-color: transparent; /* मोबाईल टच ग्लो काढला */
+        }
+        .final-bid-btn:active { transform: scale(0.96); opacity: 0.9; }
+        .final-bid-btn:disabled { background: #cbd5e1 !important; box-shadow: none; cursor: not-allowed; color: #64748b; }
+
+        .full-team-alert {
+            background: #fff7ed; color: #c2410c; padding: 15px;
+            border-radius: 16px; text-align: center; border: 1px solid #fdba74;
+        }
+
+        /* लॅपटॉप/मोठ्या स्क्रीनसाठी थोडी मोठी साइज */
+        @media (min-width: 421px) {
+            body { padding: 20px; }
+            .mobile-container { padding: 20px; border-radius: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="mobile-container" id="auction-container">
+    <div class="top-bar">
+        <div class="team-box">{{ team.name }}</div>
+        <a href="/team-logout/{{ t_id }}" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+        </a>
+    </div>
+
+    <div class="nav-row">
+        <a href="/team-squad/{{ team.id }}/{{ t_id }}" class="nav-item">My Team</a>
+        <a href="/player-list/{{ tournament.id}}" class="nav-item">Players</a>
+    </div>
+
+    <div class="balance-box">
+        <div class="balance-label" style="font-size: 0.75rem; opacity: 0.9; letter-spacing: 1px;">AVAILABLE BALANCE</div>
+        <div class="balance-inner">₹ {{ team.purse }}</div>
+    </div>
+
+    <div class="main-content">
+        <div class="player-card">
+            <img src="/static/uploads/players/{{ player.image or 'default.png' }}" class="player-img">
+            <div style="font-weight: 700; color: var(--text-main); font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ player.name if player else 'Paused' }}</div>
+            <div style="font-size: 0.7rem; color: #64748b;">{{ player.role if player else '-' }}</div>
+        </div>
+        
+        <div class="stats-stack">
+            <div class="stat-box">
+                <span class="stat-label">Current Bid</span>
+                <span class="stat-value" id="curr-price-display">₹ {{ player.current_price or player.base_price if player else 0 }}</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Bidder</span>
+                <span class="stat-value" id="bidder-display">{{ player.last_bid_team_name or 'No Bids' if player else '-' }}</span>
+            </div>
+            <div class="stat-box" style="border-top: 2px dashed {{ team.theme_color }}44;">
+                <span class="stat-label" style="color: #b45309;">Your Max Bid</span>
+                <span class="stat-value" id="max-bid-display" style="color: #b45309;">{{ max_allowed }}</span>
+            </div>
+        </div>
+    </div>
+
+    {% if player %}
+        {% if team_is_full %}
+            <div class="full-team-alert">
+                <div style="font-weight: 800; font-size: 1rem;">YOUR SQUAD IS FULL!</div>
+                <div style="font-size: 0.8rem; margin-bottom: 10px;">Reached 15-player limit.</div>
+                <a href="/squad/{{ team.id }}" class="nav-item" style="display: block; background: var(--primary); color: white; border: none; margin-top: 5px;">View Your Squad</a>
+            </div>
+        {% else %}
+            <div class="next-bid-info">
+                <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">NEXT BID AMOUNT</span>
+                <div style="font-size: 1.4rem; font-weight: 800; color: var(--primary);">
+                    {% set curr = player.current_price or 0 %}
+                    {% if not player.last_bid_team %}
+                        {% set next_bid = player.base_price %}
+                    {% else %}
+                        {% if curr < settings.limit1 %}{% set next_bid = curr + settings.val1 %}
+                        {% elif curr < settings.limit2 %}{% set next_bid = curr + settings.val2 %}
+                        {% elif curr < settings.limit3 %}{% set next_bid = curr + settings.val3 %}
+                        {% else %}{% set next_bid = curr + settings.val4 %}
+                        {% endif %}
+                    {% endif %}
+                    ₹ {{ next_bid }}
+                </div>
+            </div>
+
+            <form action="/place-bid/{{ player.id }}" method="POST" id="bid-form">
+                <input type="hidden" name="bid_increment" value="0">
+                <button type="submit" class="final-bid-btn" id="bid-btn" 
+                        {% if player.last_bid_team|int == team.id|int %} disabled {% endif %}>
+                    {% if player.last_bid_team|int == team.id|int %}
+                        YOUR BID ACTIVE
+                    {% else %}
+                        PLACE BID
+                    {% endif %}
+                </button>
+            </form>
+        {% endif %}
+    {% else %}
+        <div class="waiting-msg">
+            <i class="fas fa-clock fa-spin" style="font-size: 1.5rem; margin-bottom: 10px;"></i><br>
+            <span style="font-weight: 600;">Waiting for next player...</span>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    // मूळ स्क्रिप्ट तशीच ठेवली आहे
+    setInterval(function() {
+        fetch(window.location.href)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newElem = doc.getElementById('auction-container');
+                const oldElem = document.getElementById('auction-container');
+                if (newElem && oldElem && newElem.innerHTML !== oldElem.innerHTML) {
+                    oldElem.innerHTML = newElem.innerHTML;
+                }
+            })
+            .catch(err => console.log("Refresh Error:", err));
+    }, 1000);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ team.name }} | Squad Sheet</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+    :root {
+        --team-primary: {{ team.theme_color or '#0284c7' }};
+        --bg-black: #000000;
+        --card-dark: #111111;
+    }
+
+    body {
+        background: var(--bg-black);
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 10px;
+        color: white;
+        padding-bottom: 80px; 
+    }
+
+    .squad-container {
+        width: 100%;
+        max-width: 500px; 
+        margin: auto;
+        padding: 15px;
+        background: var(--bg-black);
+        border: 3px solid var(--team-primary);
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .team-header-new {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(135deg, #000000 0%, var(--team-primary) 100%);
+        padding: 12px;
+        border-radius: 15px;
+        border: 1px solid rgba(255,255,255,0.1);
+        margin-bottom: 20px;
+        gap: 5px;
+    }
+
+    /* --- सुधारलेला लोगो बॉक्स (No White Space) --- */
+    .logo-box {
+        width: 60px; 
+        height: 60px;
+        background: transparent !important; /* व्हाईट बॅकग्राउंड काढला */
+        border-radius: 50% !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: 2px solid #fff; /* व्हाईट बॉर्डर दिली जेणेकरून लोगो उठून दिसेल */
+        overflow: hidden;
+        padding: 0; /* पॅडिंग काढली जेणेकरून व्हाईट स्पेस दिसणार नाही */
+    }
+
+    .logo-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* इमेज पूर्ण गोलमध्ये फिट होईल, व्हाईट स्पेस राहणार नाही */
+    }
+
+    .header-text-box { flex-grow: 1; text-align: center; }
+
+    .team-name {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 1rem;
+        color: white !important;
+        text-transform: uppercase;
+        margin-bottom: 0;
+        line-height: 1.1;
+    }
+
+    .team-sub {
+        color: rgba(255,255,255,0.8);
+        font-size: 0.55rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    .squad-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .player-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    .player-round-frame {
+        width: 85px; 
+        height: 85px;
+        border-radius: 50% !important;
+        border: 2px solid var(--team-primary);
+        background: var(--card-dark);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        margin-bottom: 5px;
+    }
+
+    .player-round-frame img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .player-name-tag {
+        background: var(--team-primary);
+        color: #000000 !important;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        padding: 3px;
+        width: 100%;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 0.6rem;
+        min-height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-transform: uppercase;
+        overflow: hidden;
+    }
+
+    .empty-card .player-round-frame {
+        border: 2px dashed #334155;
+        background: transparent;
+    }
+
+    .empty-text { color: #334155; font-size: 1.2rem; }
+
+    .vacant-tag {
+        background: #1e293b !important;
+        color: #64748b !important;
+    }
+
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 15px;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+        text-align: center;
+    }
+
+    .btn-back {
+        background: var(--team-primary);
+        color: black !important;
+        font-weight: 800;
+        border-radius: 50px;
+        padding: 10px 30px;
+        text-decoration: none;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+</style>
+</head>
+<body>
+
+<div class="squad-container">
+    <div class="team-header-new">
+        <div class="logo-box">
+            <img src="{{ url_for('static', filename='uploads/logos/' + (tournament.logo or 'default.png')) }}" alt="Logo">
+        </div>
+
+        <div class="header-text-box">
+            <div class="team-name">{{ team.name }}</div>
+            <div class="team-sub">OFFICIAL SQUAD</div>
+        </div>
+
+        <div class="logo-box">
+            <img src="{{ url_for('static', filename='uploads/logos/' + (team.logo or 'default.png')) }}" alt="Team">
+        </div>
+    </div>
+
+    <div class="squad-grid">
+        {% for p in players %}
+        <div class="player-card">
+            <div class="player-round-frame">
+                {% if p.image %}
+                    <img src="{{ url_for('static', filename='uploads/players/' + p.image) }}" alt="{{ p.name }}">
+                {% else %}
+                    <i class="fas fa-user text-secondary"></i>
+                {% endif %}
+            </div>
+            <div class="player-name-tag">
+                {{ p.name }}
+            </div>
+        </div>
+        {% endfor %}
+
+        {% for i in range(15 - players|length) %}
+        <div class="player-card empty-card">
+            <div class="player-round-frame">
+                <span class="empty-text">+</span>
+            </div>
+            <div class="player-name-tag vacant-tag">
+                VACANT
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="bottom-nav">
+    <a href="/bidding/{{ t_id }}" class="btn-back">
+        <i class="fas fa-arrow-left me-2"></i> Back to Bidding
+    </a>
+</div>
+
+</body>
+</html>

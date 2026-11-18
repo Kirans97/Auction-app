@@ -1,0 +1,286 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    background: #000;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    background-image: radial-gradient(circle at center, #001529 0%, #000 100%);
+}
+
+/* टीम कार्ड क्लिकेबल करण्यासाठी स्टाईल */
+.team-badge {
+    background: #1c2d4d;
+    border: 1px solid #34495e;
+    min-width: 130px !important;
+    padding: 10px !important;
+    cursor: pointer; /* हाताचे चिन्ह येईल */
+    transition: transform 0.1s;
+}
+.team-badge:active { transform: scale(0.95); }
+
+/* तुझे मूळ लोडर आणि इतर CSS */
+.loading-overlay {
+    display: none;
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(22, 34, 56, 0.95);
+    z-index: 100;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 18px;
+}
+.loader-bar {
+    width: 60%;
+    height: 4px;
+    background: #1e293b;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+.loader-progress {
+    width: 0%;
+    height: 100%;
+    background: #f1c40f;
+    transition: width 3s linear;
+}
+.card {
+    background: #162238;
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    color: white;
+}
+.player-img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #3498db;
+    box-shadow: 0 0 15px rgba(52, 152, 219, 0.4);
+}
+.price-box {
+    font-size: 42px;
+    font-weight: 700;
+    color: #f1c40f;
+}
+.team-status-container {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 15px;
+    padding: 15px;
+    margin-top: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+</style>
+
+<div class="container-fluid py-2">
+    <div class="row g-3">
+
+        <div class="col-md-2" id="sidebar-left">
+            <div class="card p-2 mb-2 text-center shadow-sm" style="border-left: 4px solid #198754;">
+                <small class="text-uppercase text-white-50" style="font-size: 0.65rem; letter-spacing: 1px;">Last Sold</small>
+                <div class="fw-bold text-truncate" style="font-size: 0.9rem;">{{ last_sold_p.name if last_sold_p else 'No Player' }}</div>
+                <div class="text-success fw-bold" style="font-size: 1.1rem;"> {{ last_sold_price }}</div>
+            </div>
+
+            <div class="card p-2 mb-3 text-center shadow-sm" style="border-left: 4px solid #ffc107;">
+                <small class="text-uppercase text-white-50" style="font-size: 0.65rem; letter-spacing: 1px;">Expensive</small>
+                <div class="fw-bold text-truncate" style="font-size: 0.9rem;">{{ expensive_p.name if expensive_p else 'No Player' }}</div>
+                <div class="text-warning fw-bold" style="font-size: 1.1rem;">{{ expensive_price }}</div>
+                <small class="text-info" style="font-size: 0.7rem;">{{ expensive_team.split(' ')[0] if expensive_team else '---' }}</small>
+            </div>
+
+            <div class="mt-3">
+                <table class="table table-sm table-bordered border-light text-white text-center" style="background: rgba(255,255,255,0.1); font-size: 0.9rem;">
+                    <thead>
+                        <tr style="background: rgba(0,0,0,0.5);">
+                            <th>SOLD</th>
+                            <th>UNSOLD</th>
+                            <th>PENDING</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="fw-bold text-success" style="font-size: 1.2rem;">{{ msold_count }}</td>
+                            <td class="fw-bold text-danger" style="font-size: 1.2rem;">{{ unsold_count }}</td>
+                            <td class="fw-bold text-warning" style="font-size: 1.2rem;">{{ pending_count }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-7 text-center" id="auction-center-box" style="position: relative;">
+            <div id="loading-screen" class="loading-overlay">
+                <i class="fas fa-user-clock fa-4x text-warning mb-3"></i>
+                <h2 class="text-warning fw-bold">NEXT PLAYER COMING...</h2>
+                <div class="loader-bar">
+                    <div id="progress-bar"></div>
+                </div>
+            </div>
+
+            {% if not player %}
+                <div class="card p-5" id="current-player-id" data-id="none">
+                    {% if show_round_2_button %}
+                        <h2 class="mb-2 text-warning">ROUND 1 FINISHED!</h2>
+                        <div class="d-grid gap-2 col-8 mx-auto">
+                            <a href="/start-round-2/{{t_id}}" class="btn btn-danger btn-lg py-3 fw-bold shadow">START ROUND 2 (UNSOLD)</a>
+                        </div>
+                    {% else %}
+                        <h2 class="mb-4">Auction Arena</h2>
+                        <div class="d-grid gap-2 col-8 mx-auto">
+                            <a href="/create-bid/{{t_id}}" class="btn btn-success btn-lg py-3 fw-bold shadow">▶ START AUCTION</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="card p-3 position-relative" id="current-player-id" data-id="{{ player.id }}">
+                    <div class="d-flex justify-content-end mb-2">
+                        <span class="badge bg-info px-3 py-2 shadow-sm" style="font-size: 0.9rem; border-radius: 50px;">POOL: {{ player.category }}</span>
+                    </div>
+
+                    {% if player.image %}
+                        <img src="{{ url_for('static', filename='uploads/players/' + player.image) }}" class="player-img mx-auto mb-2">
+                    {% else %}
+                        <div class="player-img mx-auto mb-2 d-flex align-items-center justify-content-center bg-secondary">
+                            <i class="fas fa-user fa-3x"></i>
+                        </div>
+                    {% endif %}
+
+                    <h2 class="mb-0 text-uppercase fw-bold">{{player.name}}</h2>
+                    <h5 class="m-0 text-info">{{player.role}}</h5>
+
+                    <div class="price-box my-2" id="current-price-display">₹ {{ player.current_price or player.base_price }}</div>
+
+                    <div class="bg-dark rounded p-2 d-inline-block mx-auto" style="min-width: 250px; border: 1px solid #f1c40f;">
+                        <small class="text-warning text-uppercase" style="font-size: 0.7rem;">Current Bid By</small>
+                        <h5 class="m-0 text-white" id="current-bidder-display">{{ player.last_bid_team_name if player.last_bid_team_name != 'None' else 'No Bids Yet' }}</h5>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-3" id="sidebar-right">
+            {% if player %}
+            <form id="sell-form" method="post" action="/sell-player/{{player.id}}/{{t_id}}">
+                <div class="card p-3 mb-3 text-center border border-success">
+                    <h6 class="mb-2 text-white-50 small">Confirm Sale To:</h6>
+                    <h5 class="m-0 text-success fw-bold mb-3" id="confirm-sale-name">{{ last_team.name if last_team else '---' }}</h5>
+                    <button type="button" onclick="sellDelay('{{player.id}}','{{t_id}}')" class="btn btn-success sell-btn w-100 fw-bold" {% if not last_team %}disabled{% endif %} style="height: 60px; font-size: 1.2rem;">✅ SELL PLAYER</button>
+                </div>
+            </form>
+            {% endif %}
+
+            <div class="d-grid gap-2">
+                <a id="main-unsold-btn" href="/unsold/{{player.id if player else 0}}/{{t_id}}" class="btn btn-secondary side-btn" onclick="return unsoldDelay(event)">❌ Unsold</a>
+                <a href="/undo-auction/{{t_id}}" class="btn btn-warning side-btn fw-bold text-dark" onclick="return confirm('Undo last sold player?')">↩️ UNDO LAST</a>
+                <a href="/reset-auction/{{t_id}}" onclick="return confirm('Reset EVERYTHING?')" class="btn btn-danger side-btn opacity-75">🔄 Reset</a>
+                <button id="pause-btn" type="button" class="btn btn-outline-warning side-btn" onclick="togglePause()">⏸ Pause</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="team-status-container" id="team-purse-display">
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            {% for team in teams %}
+            <div class="team-badge text-center rounded shadow-sm" onclick="quickBid('{{ team.id }}')">
+                {% if team.logo %}
+                    <img src="/static/uploads/logos/{{ team.logo }}" width="35" height="35" class="mb-1 rounded-circle border border-secondary shadow-sm">
+                {% else %}
+                    <div class="bg-secondary rounded-circle mx-auto mb-1" style="width:35px; height:35px;"></div>
+                {% endif %}
+                <h6 class="text-white mb-1" style="font-size: 0.75rem;">{{ team.short_name }}</h6>
+                <div class="px-1 rounded bg-black">
+                    <p class="text-warning fw-bold mb-0" style="font-size: 0.9rem;">₹{{ team.purse }}</p>
+                </div>
+                <div class="px-1 rounded bg-black mt-1">
+                    <p class="text-info mb-0" style="font-size: 0.7rem;">Max Bid: {{ team.max_allowed }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+let isWaiting = false;
+let polling;
+
+// कार्ड वरून बिड करण्यासाठी फंक्शन
+function quickBid(teamId) {
+    const playerEl = document.getElementById('current-player-id');
+    const playerId = playerEl ? playerEl.getAttribute('data-id') : 'none';
+    
+    if (playerId === 'none' || isWaiting) return;
+
+    // हा कॉल आता बरोबर /admin-place-bid/P_ID/T_ID ला जाईल
+    fetch(`/admin-place-bid/${playerId}/${teamId}`, { 
+        method: 'POST' 
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Bid Placed Successfully");
+            // रिफ्रेश करण्याची गरज नाही कारण तुझे पोलिंग (Interval) चालू आहे
+        } else {
+            // इथे तुला ४०४ किंवा ४०० एररचा मेसेज दिसेल
+            response.text().then(text => alert("Bid Error: " + text));
+        }
+    })
+    .catch(error => {
+        console.error('Fetch Error:', error);
+        alert("Server Error! Check connection.");
+    });
+}
+/* तुझे मूळ लोडर आणि रिफ्रेश फंक्शन्स */
+function startLoader(callback){
+    isWaiting = true;
+    if(polling) clearInterval(polling);
+    const loader = document.getElementById("loading-screen");
+    const bar = document.getElementById("progress-bar");
+    if(loader) loader.style.display = "flex";
+    if(bar){
+        bar.style.transition = "none";
+        bar.style.width = "0%";
+        setTimeout(()=>{ bar.style.transition = "width 3s linear"; bar.style.width = "100%"; },50);
+    }
+    setTimeout(()=>{ callback(); },3000);
+}
+
+function sellDelay(playerId, tId){
+    startLoader(function(){ window.location.href = "/sell-player/"+playerId+"/"+tId; });
+}
+
+function unsoldDelay(e){
+    e.preventDefault();
+    const url = e.currentTarget.href;
+    startLoader(function(){ window.location.href = url; });
+    return false;
+}
+
+polling = setInterval(function(){
+    if(isWaiting) return;
+    fetch(window.location.href, { cache: "no-store" })
+    .then(res => res.text())
+    .then(html => {
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(html,'text/html');
+        const sections = ['sidebar-left', 'sidebar-right', 'team-purse-display', 'auction-center-box'];
+        sections.forEach(id => {
+            let oldEl = document.getElementById(id);
+            let newEl = doc.getElementById(id);
+            if(oldEl && newEl && oldEl.innerHTML !== newEl.innerHTML) {
+                oldEl.innerHTML = newEl.innerHTML;
+            }
+        });
+    }).catch(()=>{});
+}, 2000);
+</script>
+
+{% endblock %}

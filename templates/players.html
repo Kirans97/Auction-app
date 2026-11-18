@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Players List - {{ tournament.name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body { background-color: #0f172a; color: white; font-family: 'Poppins', sans-serif; margin: 0; padding: 0; }
+        
+        /* १. हेडर आणि टॉप स्पेसिंग */
+        .main-container { width: 100%; max-width: 1400px; margin: 0 auto; padding-top: 20px; padding-bottom: 50px; }
+
+        .header-box {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-bottom: 3px solid #ffc107; margin-bottom: 25px;
+            display: flex; align-items: center; min-height: 70px; position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border-radius: 8px;
+        }
+
+        .auction-pro-badge {
+            background-color: #ffc107; color: #000 !important; padding: 0 30px 0 15px; height: 100%;
+            display: flex; align-items: center; text-decoration: none !important;
+            clip-path: polygon(0% 0%, 85% 0%, 100% 100%, 0% 100%); position: absolute; left: 0; top:0; bottom:0;
+            border-radius: 8px 0 0 8px;
+        }
+
+        .badge-text { font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; margin: 0; }
+        .tournament-title-container { flex-grow: 1; text-align: center; padding: 0 60px; }
+        .tournament-name { font-family: 'Rajdhani', sans-serif; font-weight: 800; text-transform: uppercase; color: #ffc107; font-size: 1.5rem; margin: 0; }
+
+        /* २. कंट्रोल्स रो (Filters Left, Toggle Right) */
+        .controls-row {
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 15px; margin-bottom: 25px; padding: 0 15px; flex-wrap: wrap;
+        }
+
+        .view-toggle {
+            display: flex; background: #1e293b; border-radius: 50px; padding: 4px; border: 1px solid #334155;
+        }
+
+        .toggle-btn {
+            border: none; background: transparent; color: #94a3b8; padding: 6px 18px;
+            border-radius: 50px; cursor: pointer; transition: 0.3s; font-size: 0.85rem; font-weight: 600;
+        }
+
+        .toggle-btn.active { background: #ffc107; color: #000; }
+
+        /* ३. बटण आणि बॅज कलर्स */
+        .btn-filter-custom { border-radius: 50px !important; padding: 6px 18px; font-weight: 600; font-size: 0.8rem; border: none; color: white !important; text-transform: uppercase; }
+        .btn-all { background-color: #f8fafc !important; color: #1e293b !important; }
+        .btn-sold, .status-sold { background-color: #198754 !important; color: white !important; }
+        .btn-unsold, .status-unsold { background-color: #dc3545 !important; color: white !important; }
+        .btn-pending, .status-pending { background-color: #6c757d !important; color: white !important; }
+        .cat-badge-A { background-color: #ffc107 !important; color: #000 !important; }
+        .cat-badge-B { background-color: #0dcaf0 !important; color: #000 !important; }
+
+        /* ४. कार्ड व्ह्यू स्टाईलिंग */
+        .player-card {
+            background: white; border-radius: 12px 30px 12px 30px;
+            padding: 12px; margin-bottom: 20px; display: flex; align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); color: #1e293b; height: 115px;
+        }
+        .player-img-container { width: 75px; height: 75px; flex-shrink: 0; margin-right: 15px; }
+        .player-img-circle { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #e2e8f0; }
+        .p-name { font-weight: 700; font-size: 1rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .p-role { color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 600; }
+        .p-price { font-weight: 800; color: #198754; font-size: 1.1rem; }
+        .card-actions { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; height: 100%; flex-grow: 1; }
+
+        /* ५. लिस्ट व्ह्यू (Table) */
+        #list-view-wrapper { display: none; }
+        .table-white-custom { background: white; border-radius: 10px; overflow: hidden; color: #1e293b; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .table-white-custom thead { background: #f8fafc; }
+        .table-white-custom th { color: #475569; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; padding: 15px; border: none; }
+        .table-white-custom td { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; border: none; }
+
+        /* ६. रिस्पॉन्सिव्ह ग्रिड (४-२-१) */
+        @media (min-width: 1200px) { .col-custom { width: 25%; } }
+        @media (max-width: 1199px) and (min-width: 768px) { .col-custom { width: 50%; } }
+        @media (max-width: 767px) { 
+            .col-custom { width: 100%; }
+            .controls-row { justify-content: center; }
+            .mobile-hide { display: none; }
+            .tournament-name { font-size: 1.1rem; }
+            .auction-pro-badge { padding: 0 20px 0 10px; }
+            .badge-text { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container px-2">
+    <div class="header-box">
+        <a href="/" class="auction-pro-badge">
+            <h2 class="badge-text">Auction PRO</h2>
+        </a>
+        <div class="tournament-title-container">
+            <h1 class="tournament-name">{{ tournament.name }} - Player list</h1>
+        </div>
+        <a href="/dashboard/{{ tournament.id }}" class="btn btn-warning btn-sm" style="position: absolute; right: 15px; z-index: 5;">
+            <label> Dashboard</label>
+        </a>
+    </div>
+
+    <div class="controls-row">
+        <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-filter-custom btn-all" onclick="filterData('all')">ALL</button>
+            <button class="btn btn-filter-custom btn-sold" onclick="filterData('sold')">SOLD</button>
+            <button class="btn btn-filter-custom btn-unsold" onclick="filterData('unsold')">UNSOLD</button>
+            <button class="btn btn-filter-custom btn-pending" onclick="filterData('pending')">PENDING</button>
+        </div>
+
+        <div class="view-toggle">
+            <button class="toggle-btn active" id="btn-card" onclick="switchView('card')">
+                <i class="fas fa-th-large me-1"></i> Card
+            </button>
+            <button class="toggle-btn" id="btn-list" onclick="switchView('list')">
+                <i class="fas fa-list me-1"></i> List
+            </button>
+        </div>
+    </div>
+
+    <div id="card-view-wrapper" class="container-fluid">
+        <div class="row" id="players-grid">
+            {% for p in players %}
+            <div class="col-custom data-row" data-status="{{ p.status or 'pending' }}">
+                <div class="player-card">
+                    <div class="player-img-container">
+                        {% if p.image %}
+                            <img src="{{ url_for('static', filename='uploads/players/' + p.image) }}" class="player-img-circle">
+                        {% else %}
+                            <div class="player-img-circle bg-light d-flex align-items-center justify-content-center">
+                                <i class="fas fa-user text-muted fa-2x"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="player-info">
+                        <div class="p-name">{{ p.name }}</div>
+                        <div class="p-role">{{ p.role }}</div>
+                        <div class="badge cat-badge-{{ p.category or 'B' }} mt-1" style="font-size: 0.65rem;">CAT {{ p.category or 'B' }}</div>
+                        <div class="p-price mt-1">₹{{ p.current_price if p.status == 'sold' else p.base_price }}</div>
+                    </div>
+                    <div class="card-actions">
+                        <a href="/delete-player/{{p.id}}" class="text-muted opacity-50" onclick="return confirm('Delete?')"><i class="fas fa-trash-alt"></i></a>
+                        <span class="badge status-{{ p.status or 'pending' }}" style="font-size: 0.6rem; text-transform: uppercase;">{{ p.status or 'PENDING' }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="list-view-wrapper" class="container-fluid">
+        <div class="table-responsive">
+            <table class="table table-white-custom text-center align-middle">
+                <thead>
+                    <tr>
+                        <th width="70">IMG</th>
+                        <th class="text-start">Player Name</th>
+                        <th class="mobile-hide">Role</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in players %}
+                    <tr class="data-row" data-status="{{ p.status or 'pending' }}">
+                        <td>
+                            <img src="{{ url_for('static', filename='uploads/players/' + p.image) if p.image else 'https://via.placeholder.com/40' }}" width="40" height="40" class="rounded-circle border shadow-sm" style="object-fit: cover;">
+                        </td>
+                        <td class="text-start">
+                            <div class="fw-bold">{{ p.name }}</div>
+                            <small class="text-muted d-md-none text-uppercase">{{ p.role }}</small>
+                        </td>
+                        <td class="mobile-hide text-uppercase" style="font-size: 0.8rem;">{{ p.role }}</td>
+                        <td><span class="badge cat-badge-{{ p.category or 'B' }}">CAT {{ p.category or 'B' }}</span></td>
+                        <td class="fw-bold text-success">₹{{ p.current_price if p.status == 'sold' else p.base_price }}</td>
+                        <td><span class="badge status-{{ p.status or 'pending' }} py-1 px-2" style="font-size: 0.7rem;">{{ p.status or 'PENDING' }}</span></td>
+                        <td>
+                            <a href="/delete-player/{{p.id}}" class="text-danger" onclick="return confirm('Delete?')">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchView(type) {
+        const cardView = document.getElementById('card-view-wrapper');
+        const listView = document.getElementById('list-view-wrapper');
+        const btnCard = document.getElementById('btn-card');
+        const btnList = document.getElementById('btn-list');
+
+        if (type === 'card') {
+            cardView.style.display = 'block';
+            listView.style.display = 'none';
+            btnCard.classList.add('active');
+            btnList.classList.remove('active');
+        } else {
+            cardView.style.display = 'none';
+            listView.style.display = 'block';
+            btnList.classList.add('active');
+            btnCard.classList.remove('active');
+        }
+    }
+
+    function filterData(status) {
+        const rows = document.querySelectorAll('.data-row');
+        rows.forEach(row => {
+            const currentStatus = row.getAttribute('data-status');
+            if (status === 'all' || currentStatus === status) {
+                row.style.setProperty('display', row.tagName === 'TR' ? 'table-row' : 'block', 'important');
+            } else {
+                row.style.setProperty('display', 'none', 'important');
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

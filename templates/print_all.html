@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Squads Print</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        
+        body { background: #000; margin: 0; padding: 0; }
+
+        .page-wrapper {
+            page-break-after: always;
+            background: #000;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Suruvatila set kela jyamule gap yenar nahi */
+            height: auto; 
+        }
+
+        .squad-container {
+            width: 185mm;
+            padding: 10mm;
+            background: #000;
+            border: 3px solid var(--t-color);
+            border-radius: 10px;
+            display: inline-block; /* Content nusar wrap honyasathi */
+        }
+
+        .team-header { text-align: center; margin-bottom: 25px; }
+        .team-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 2.5rem;
+            color: var(--t-color);
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .squad-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px 15px; 
+        }
+
+        .player-card { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+
+        .player-round-frame {
+            width: 100%; 
+            height: 75px; 
+            border-radius: 12px; 
+            border: 2px solid var(--t-color);
+            background: #111;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            overflow: hidden; 
+            margin-bottom: 8px;
+        }
+
+        .player-round-frame img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; 
+            padding: 5px;
+        }
+
+        .player-name-tag {
+            background: var(--t-color);
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            padding: 5px; 
+            width: 100%;
+            border-radius: 6px; 
+            text-align: center;
+            font-size: 0.75rem; 
+            min-height: 30px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            text-transform: uppercase;
+        }
+
+        .vacant-tag { background: #1e293b !important; color: #64748b !important; }
+        
+        @media print {
+            .no-print { display: none !important; }
+            .page-wrapper { padding: 10mm 0; }
+            body { background: #000 !important; }
+        }
+    </style>
+</head>
+<body>
+        <div class="d-flex gap-2">
+            <a href="/dashboard/{{t_id}}" class="btn btn-outline-light">🔙 Back</a>
+            <button onclick="window.print()" class="btn btn-primary">🖨️ Print PDF</button>
+        </div>
+
+
+{% for data in full_data %}
+    <div class="page-wrapper" style="--t-color: {{ data.team.theme_color or '#fbbf24' }};">
+        <div class="squad-container">
+            <div class="team-header">
+                <div class="team-name">{{ data.team.name }}</div>
+                <div style="color: #64748b; letter-spacing: 2px; font-size: 0.8rem; margin-top: 5px;">OFFICIAL SQUAD LIST</div>
+            </div>
+
+            <div class="squad-grid">
+                {% for p in data.players %}
+                <div class="player-card">
+                    <div class="player-round-frame">
+                        {% if p.image %}
+                            <img src="{{ url_for('static', filename='uploads/players/' + p.image) }}">
+                        {% else %}
+                            <span style="color:#444; font-size: 0.5rem;">PHOTO</span>
+                        {% endif %}
+                    </div>
+                    <div class="player-name-tag">
+                        {{ p.name }}
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% for i in range(15 - data.players|length) %}
+                <div class="player-card">
+                    <div class="player-round-frame" style="border-style: dashed; opacity: 0.3;">
+                        <span style="color: var(--t-color); font-size: 1.2rem;">+</span>
+                    </div>
+                    <div class="player-name-tag vacant-tag">VACANT</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+</body>
+</html>

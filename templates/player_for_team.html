@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player List - {{ tournament.name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            font-family: 'Segoe UI', sans-serif;
+            padding-bottom: 90px; /* Space for fixed button */
+        }
+
+        /* Centered Layout */
+        .main-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* Filter Buttons - Solid Colors */
+        .filter-group .btn {
+            border: 1px solid rgba(0,0,0,0.1);
+            font-size: 0.85rem;
+            padding: 10px 5px;
+        }
+        .btn-all { background-color: #ffffff; color: #000; }
+        .btn-sold { background-color: #198754; color: #fff; }
+        .btn-unsold { background-color: #dc3545; color: #fff; }
+        .btn-pending { background-color: #6c757d; color: #fff; }
+
+        /* Card Styling - Black Theme */
+        .player-card {
+            background: #000000;
+            border: 2px solid #6ab04c;
+            border-radius: 25px 5px 25px 5px;
+            padding: 20px;
+            text-align: center;
+            height: 100%;
+            transition: 0.3s;
+        }
+        .card-name { color: #fbbf24; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
+        .card-role { color: #fbbf24; font-size: 0.8rem; opacity: 0.8; }
+        .card-price { color: #ffffff; font-size: 1.4rem; font-weight: 800; margin: 12px 0; }
+
+        /* Status Badges */
+        .status-badge-custom {
+            padding: 5px 15px;
+            font-weight: bold;
+            color: #fff;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+        .bg-sold { background-color: #198754 !important; }
+        .bg-unsold { background-color: #dc3545 !important; }
+        .bg-pending { background-color: #6c757d !important; }
+
+        /* Fixed Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            z-index: 1000;
+        }
+        .btn-back-fixed {
+            background-color: #000;
+            color: #fbbf24;
+            border: 2px solid #fbbf24;
+            padding: 12px 30px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 50px;
+            display: inline-block;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* Toggle Buttons */
+        .btn-toggle { background: #f3f4f6; border: 1px solid #d1d5db; }
+        .btn-toggle.active { background: #000; color: #fff; }
+
+        @media (max-width: 768px) {
+            .main-wrapper { padding: 10px; }
+            .col-6 { padding: 5px; }
+            .filter-group .btn { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h4 class="fw-bold mb-0">Player List</h4>
+        <div class="btn-group">
+            <button class="btn btn-toggle active" id="listBtn" onclick="toggleView('list')"><i class="fas fa-list"></i></button>
+            <button class="btn btn-toggle" id="cardBtn" onclick="toggleView('card')"><i class="fas fa-th-large"></i></button>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <div class="btn-group w-100 shadow-sm filter-group">
+            <button class="btn btn-all fw-bold" onclick="filterData('all')">ALL (<span id="cnt-all">0</span>)</button>
+            <button class="btn btn-sold fw-bold" onclick="filterData('sold')">SOLD (<span id="cnt-sold">0</span>)</button>
+            <button class="btn btn-unsold fw-bold" onclick="filterData('unsold')">UNSOLD (<span id="cnt-unsold">0</span>)</button>
+            <button class="btn btn-pending fw-bold" onclick="filterData('pending')">PENDING (<span id="cnt-pending">0</span>)</button>
+        </div>
+    </div>
+
+    <div id="listView" class="table-responsive">
+        <table class="table table-bordered align-middle text-center">
+            <thead class="table-light">
+                <tr>
+                    <th>NAME</th>
+                    <th>ROLE</th>
+                    <th>PRICE</th>
+                    <th>STATUS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in players %}
+                <tr class="player-item" data-status="{{ p.status }}">
+                    <td class="text-start ps-3 fw-bold">{{ p.name }} </td>
+                    <td class="text-start ps-3"> {{ p.role }} </td>
+                    <td class="fw-bold">₹{{ p.current_price if p.status == 'sold' else p.base_price }}</td>
+                    <td>
+                        <span class="badge {% if p.status == 'sold' %}bg-sold{% elif p.status == 'unsold' %}bg-unsold{% else %}bg-pending{% endif %}">
+                            {{ p.status|upper }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div id="cardView" class="row g-2 d-none">
+        {% for p in players %}
+        <div class="col-6 col-md-4 player-item" data-status="{{ p.status }}">
+            <div class="player-card">
+                <div class="card-name">{{ p.name }}</div>
+                <div class="card-role">({{ p.role }})</div>
+                <div class="card-price">₹{{ p.current_price if p.status == 'sold' else p.base_price }}</div>
+                <span class="status-badge-custom {% if p.status == 'sold' %}bg-sold{% elif p.status == 'unsold' %}bg-unsold{% else %}bg-pending{% endif %}">
+                    {{ p.status }}
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="bottom-nav">
+    <a href="/bidding/{{ tournament.id }}" class="btn-back-fixed">
+        <i class="fas fa-arrow-left me-2"></i> BACK TO BIDDING
+    </a>
+</div>
+
+<script>
+    // १. काउंट अपडेट करण्याचे लॉजिक
+    function updateCounts() {
+        document.getElementById('cnt-all').innerText = document.querySelectorAll('.player-item[data-status]').length / 2; // /2 because items are duplicated in list/card view
+        document.getElementById('cnt-sold').innerText = document.querySelectorAll('.player-item[data-status="sold"]').length / 2;
+        document.getElementById('cnt-unsold').innerText = document.querySelectorAll('.player-item[data-status="unsold"]').length / 2;
+        document.getElementById('cnt-pending').innerText = document.querySelectorAll('.player-item[data-status="pending"]').length / 2;
+    }
+
+    // २. व्ह्यू टॉगल
+    function toggleView(view) {
+        const listView = document.getElementById('listView');
+        const cardView = document.getElementById('cardView');
+        const listBtn = document.getElementById('listBtn');
+        const cardBtn = document.getElementById('cardBtn');
+
+        if (view === 'list') {
+            listView.classList.remove('d-none');
+            cardView.classList.add('d-none');
+            listBtn.classList.add('active');
+            cardBtn.classList.remove('active');
+        } else {
+            listView.classList.add('d-none');
+            cardView.classList.remove('d-none');
+            cardBtn.classList.add('active');
+            listBtn.classList.remove('active');
+        }
+    }
+
+    // ३. फिल्टर लॉजिक
+    function filterData(status) {
+        const items = document.querySelectorAll('.player-item');
+        items.forEach(item => {
+            if (status === 'all' || item.getAttribute('data-status') === status) {
+                item.style.setProperty('display', '', 'important');
+            } else {
+                item.style.setProperty('display', 'none', 'important');
+            }
+        });
+    }
+
+    // पेज लोड झाल्यावर काउंट चालवा
+    window.onload = updateCounts;
+</script>
+
+</body>
+</html>

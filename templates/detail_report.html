@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h4 class="text-white mb-3">Auction Results</h4>
+
+<!-- FILTERS -->
+
+<form method="get" class="d-flex gap-2 mb-3">
+
+  <select name="status" class="form-select form-select-sm" style="width:150px">
+    <option value="">All Status</option>
+    <option value="sold">Sold</option>
+    <option value="pending">Unsold</option>
+  </select>
+
+  <select name="team" class="form-select form-select-sm" style="width:180px">
+    <option value="all">All Teams</option>
+    {% for t in teams %}
+    <option value="{{t.id}}">{{t.name}}</option>
+    {% endfor %}
+  </select>
+
+<button class="btn btn-primary btn-sm">Filter</button>
+
+  <a href="/export-results/{{t_id}}" class="btn btn-success btn-sm">
+    Export Excel
+  </a>
+
+</form>
+
+<div class="card p-2">
+
+<table class="table table-dark table-striped table-bordered table-sm text-center">
+
+  <thead>
+    <tr>
+      <th>Img</th>
+      <th>Name</th>
+      <th>Role</th>
+      <th>Status</th>
+      <th>Sold To</th>
+      <th>Price</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {% for p in players %}
+    <tr>
+
+```
+  <td>
+    {% if p.image %}
+    <img src="{{ url_for('static', filename='uploads/' + p.image) }}" width="32">
+    {% endif %}
+  </td>
+
+  <td>{{p.name}}</td>
+  <td>{{p.role}}</td>
+
+  <td>
+    {% if p.status == 'sold' %}
+      <span class="text-success">Sold</span>
+    {% else %}
+      <span class="text-warning">Unsold</span>
+    {% endif %}
+  </td>
+
+  <td>
+    {% for t in teams %}
+      {% if t.id == p.sold_to %} {{t.name}} {% endif %}
+    {% endfor %}
+  </td>
+
+  <td>₹ {{p.sold_price or '-'}}</td>
+
+</tr>
+```
+
+{% endfor %}
+
+  </tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

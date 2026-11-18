@@ -1,0 +1,87 @@
+body{
+    background:#0f172a;
+    color:white;
+    font-family:Segoe UI, sans-serif;
+}
+
+.navbar{
+    background:#111827;
+    padding:12px;
+}
+
+.card{
+    background:#1f2937;
+    border-radius:12px;
+    padding:20px;
+    margin-bottom:15px;
+}
+
+.btn-main{
+    background:#22c55e;
+    color:white;
+    border:none;
+    padding:8px 16px;
+    border-radius:8px;
+}
+
+input{
+    padding:8px;
+    margin:5px;
+    border-radius:6px;
+    border:none;
+}
+
+h1,h2,h3{
+    font-weight:700;
+}
+
+/* Team card text white */
+.team-name{
+    color:white;
+    font-weight:700;
+    font-size:18px;
+}
+
+.team-purse{
+    color:white;
+    font-size:14px;
+}
+
+/* Center logo */
+.team-logo{
+    display:block;
+    margin:auto;
+}
+
+/* ===== Sidebar Layout ===== */
+
+body{
+    margin:0;
+    background:#0f172a;
+    color:white;
+    font-family:Segoe UI, sans-serif;
+}
+
+.sidebar{
+    width:220px;
+    height:100vh;
+    background:#020617;
+    position:fixed;
+}
+
+.sidebar a{
+    display:block;
+    color:white;
+    padding:12px;
+    text-decoration:none;
+    border-radius:6px;
+    margin-bottom:6px;
+}
+
+.sidebar a:hover{
+    background:#1e293b;
+}
+
+.content{
+    margin-left:220px;
+}

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Auction Pro System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            overflow-x: hidden; /* मोबाईलवर आडवे स्क्रोलिंग रोखण्यासाठी */
+        }
+
+        .about-header {
+            padding: 60px 0 30px; /* मोबाईलसाठी थोडे कमी केले */
+            background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), url("/static/bg.jpg");
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+            border-bottom: 2px solid #fbbf24;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #fbbf24;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            font-size: 1.8rem; /* डिफॉल्ट मोबाईलसाठी */
+        }
+
+        /* Steps Styling */
+        .step-box {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            padding: 30px;
+            height: 100%;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .step-box:hover {
+            border-color: #fbbf24;
+            transform: translateY(-10px);
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .step-number {
+            font-size: 2.5rem; /* मोबाईलसाठी थोडे लहान */
+            font-weight: 900;
+            color: rgba(251, 191, 36, 0.2);
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .feature-card {
+            border-left: 4px solid #fbbf24;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .highlight-text {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        .btn-back {
+            border: 2px solid #fbbf24;
+            color: #fbbf24;
+            padding: 10px 30px;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: 0.3s;
+            display: inline-block; /* मोबाईलवर बटन व्यवस्थित दिसण्यासाठी */
+        }
+
+        .btn-back:hover {
+            background: #fbbf24;
+            color: #000;
+        }
+
+        /* --- MOBILE RESPONSIVE QUERIES --- */
+        @media (min-width: 768px) {
+            .about-header { padding: 100px 0 60px; }
+            .section-title { font-size: 2.5rem; }
+            .step-number { font-size: 4rem; }
+        }
+
+        @media (max-width: 576px) {
+            .display-3 { font-size: 2.5rem !important; }
+            .lead { font-size: 1rem; }
+            .about-header { padding: 40px 15px; }
+            .section-title { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="about-header">
+        <div class="container px-3">
+            <h1 class="display-3 fw-bold" style="font-family: 'Montserrat';">ABOUT <span style="color: #fbbf24;">US</span></h1>
+            <p class="lead">Revolutionizing local cricket tournaments with professional auction technology.</p>
+        </div>
+    </header>
+
+    <section class="container py-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6">
+                <h2 class="section-title">Who We Are</h2>
+                <p>Auction Pro System is a dedicated platform designed to bring the IPL-style excitement to local cricket communities. We provide tournament organizers with a high-tech, real-time bidding environment that is both transparent and engaging.</p>
+                <p>Our mission is to eliminate manual errors, manage budgets efficiently, and provide a world-class experience for players and team owners alike.</p>
+            </div>
+            <div class="col-lg-6">
+                <div class="feature-card">
+                    <h5 class="highlight-text">Professional Edge</h5>
+                    <p class="small m-0">Live screens and instant updates for a premium feel.</p>
+                </div>
+                <div class="feature-card">
+                    <h5 class="highlight-text">Data Integrity</h5>
+                    <p class="small m-0">Secure management of player stats and auction history.</p>
+                </div>
+                <div class="feature-card">
+                    <h5 class="highlight-text">Accessibility</h5>
+                    <p class="small m-0">Accessible from any device with a web browser.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-black py-5">
+        <div class="container text-center px-4">
+            <h2 class="section-title">The Auction Process</h2>
+            <div class="row g-4 mt-2">
+                <div class="col-md-4">
+                    <div class="step-box">
+                        <div class="step-number">01</div>
+                        <h4 class="highlight-text">Onboarding</h4>
+                        <p class="m-0">We register your tournament, upload player pools, and set up team owner profiles with starting budgets.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="step-box">
+                        <div class="step-number">02</div>
+                        <h4 class="highlight-text">Live Bidding</h4>
+                        <p class="m-0">The auctioneer controls the floor. Real-time bidding updates are visible to everyone on big screens and mobile devices.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="step-box">
+                        <div class="step-number">03</div>
+                        <h4 class="highlight-text">Finalization</h4>
+                        <p class="m-0">Once the auction ends, squads are automatically generated and ready for export in professional PDF formats.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container py-5 text-center">
+        <h2 class="section-title">Why Choose Us?</h2>
+        <div class="row text-start mt-4 g-4 px-2">
+            <div class="col-md-6">
+                <h4><span class="highlight-text">✔</span> Dynamic Live Dashboard</h4>
+                <p>No more refreshing pages. Our system uses real-time synchronization to show every bid the second it happens.</p>
+            </div>
+            <div class="col-md-6">
+                <h4><span class="highlight-text">✔</span> Automated Budgeting</h4>
+                <p>The system tracks every penny spent, ensuring no team exceeds their assigned purse during the heat of the auction.</p>
+            </div>
+            <div class="col-md-6">
+                <h4><span class="highlight-text">✔</span> Player Management</h4>
+                <p>Comprehensive database support for player categories, base prices, and detailed statistics.</p>
+            </div>
+            <div class="col-md-6">
+                <h4><span class="highlight-text">✔</span> Instant Reporting</h4>
+                <p>Download complete team lists and financial summaries immediately after the event.</p>
+            </div>
+        </div>
+        
+        <div class="mt-5">
+            <a href="/" class="btn-back">Return to Home</a>
+        </div>
+    </section>
+
+    <footer class="py-4 text-center border-top border-secondary">
+        <p class="text-secondary small m-0 px-3">© 2026 Auction Pro System | Professional Auction Solutions</p>
+    </footer>
+
+</body>
+</html>

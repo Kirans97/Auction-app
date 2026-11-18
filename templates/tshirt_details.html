@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team-wise T-Shirt Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background: #0f172a; 
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container-custom {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 15px; /* Mobile साठी थोडी पॅडिंग कमी केली */
+        }
+
+        .team-block {
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* मोबाईलवर टेबल व्यवस्थित दिसण्यासाठी हे महत्त्वाचे आहे */
+        .table-responsive-custom {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .my-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+            min-width: 600px; /* मोबाईलवर कॉलम्स एकमेकांत घुसणार नाहीत */
+        }
+
+        .my-table thead th {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+            padding: 15px 10px;
+            text-transform: uppercase;
+            font-weight: 700;
+            border: 1px solid #333;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .my-table td {
+            padding: 12px 10px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: black !important;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .team-title-card {
+            padding: 15px;
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: 700;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .team-separator {
+            border: none;
+            border-top: 2px dotted rgba(255, 255, 255, 0.3);
+            margin: 30px 0;
+        }
+
+        /* मोबाईलवर वरची हेडलाइन आणि बटणे नीट करण्यासाठी */
+        @media (max-width: 576px) {
+            .header-flex {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            .team-title-card h2 {
+                font-size: 1.2rem !important;
+            }
+        }
+
+        @media print {
+            @page { size: auto; margin: 5mm; }
+            .no-print, .btn { display: none !important; }
+            body { background: white !important; } 
+            
+            .container-custom { max-width: 100% !important; width: 100% !important; padding: 0; }
+            
+            .team-title-card { 
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color: white !important; 
+            }
+            
+            .my-table thead th { 
+                background-color: #000 !important; 
+                color: #fff !important; 
+                -webkit-print-color-adjust: exact !important;
+            }
+            
+            .dynamic-row { 
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .my-table td { 
+                color: white !important; 
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .team-separator {
+                border-top: 2px dotted #000 !important;
+                margin: 15px 0;
+            }
+            /* प्रिंट करताना टेबल पूर्ण दिसावा */
+            .my-table { min-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-custom py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 no-print header-flex">
+        <h3 class="text-white m-0">👕 Player T-Shirt Details</h3>
+        <div>
+            <a href="/dashboard/{{t_id}}" class="btn btn-outline-light me-2 rounded-0 btn-sm">🔙 Back</a>
+            <button onclick="window.print()" class="btn btn-primary rounded-0 px-4 btn-sm">🖨️ Print Report</button>
+        </div>
+    </div>
+
+    {% for team in teams %}
+        {% set ns = namespace(found=false) %}
+        {% for p, r in combined_data %}
+            {% if p.sold_to == team.id %}
+                {% set ns.found = true %}
+            {% endif %}
+        {% endfor %}
+
+        {% if ns.found %}
+        <div class="team-block">
+            <div class="team-title-card" style="background: linear-gradient(135deg, #000000, {{ team.theme_color if team.theme_color else '#162238' }});">
+                <h2 class="m-0 text-white" style="font-size: 1.5rem;">{{ team.name }}</h2>
+            </div>
+            
+            <div class="table-responsive-custom">
+                <table class="my-table">
+                    <thead>
+                        <tr>
+                            <th>Player Name</th>
+                            <th>T-Shirt Name</th>
+                            <th>Jersey No.</th>
+                            <th>Size</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p, r in combined_data %}
+                            {% if p.sold_to == team.id %}
+                            <tr class="dynamic-row" style="background-color: {{ team.theme_color if team.theme_color else '#1e293b' }} !important;">
+                                <td class="fw-bold">{{ p.name }}</td>
+                                <td class="text-uppercase">{{ r.ts_name if r else '-' }}</td>
+                                <td>{{ r.ts_no if r else '-' }}</td>
+                                <td>{{ r.ts_size if r else '-' }}</td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <hr class="team-separator">
+        {% endif %}
+    {% endfor %}
+</div>
+
+</body>
+</html>

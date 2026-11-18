@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ tournament.name }} - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .main-wrapper {
+            width: 95%;
+            max-width: 1300px;
+            padding: 40px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* १. हेडर बॉक्स - मॉडर्न लुक */
+        .header-box {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border: 2px solid #ffc107;
+            margin-bottom: 10px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            position: relative;
+            min-height: 85px;
+            overflow: hidden;
+        }
+
+        /* २. नवीन Slanted Badge (Auction Pro साठी) */
+        .auction-pro-badge {
+            background-color: #ffc107;
+            color: #000 !important;
+            padding: 0 40px 0 25px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none !important;
+            /* प्रोफेशनल अँगुलर कट */
+            clip-path: polygon(0% 0%, 85% 0%, 100% 100%, 0% 100%);
+            transition: 0.3s;
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 2;
+        }
+        .auction-pro-badge:hover {
+            background-color: #ffffff;
+            padding-left: 35px;
+        }
+        .badge-text {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+
+        /* ३. टूर्नामेंट नेम - प्रॉपर सेंटर */
+        .tournament-title-container {
+            flex-grow: 1;
+            text-align: center;
+            z-index: 1;
+        }
+        .tournament-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #ffc107;
+            font-size: 2.2rem;
+            margin: 0;
+        }
+
+        /* ४. Edit बटन */
+        .edit-tournament-btn {
+            position: absolute;
+            right: 20px;
+            border-radius: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            z-index: 2;
+        }
+
+        /* ५. डॉटेड लाईन */
+        .dotted-line {
+            border-top: 5px dotted #ffc107;
+            margin: 20px 0 40px 0;
+            width: 100%;
+            opacity: 0.7;
+        }
+
+        /* ग्रीड आणि कार्ड्स */
+        .custom-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 25px;
+            width: 100%;
+            margin-bottom: 50px;
+        }
+
+        .dashboard-card {
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            border-radius: 4px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 180px;
+            text-decoration: none !important;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-8px);
+            filter: brightness(1.1);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.4) !important;
+        }
+        .icon-box { font-size: 55px; margin-bottom: 15px; display: block; }
+        .card-title { font-weight: 700; text-transform: uppercase; font-size: 1.2rem; color: white; }
+
+        .link-section {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            padding: 30px;
+            width: 100%;
+            border-radius: 8px;
+        }
+        .copy-input {
+            background: #0f172a !important;
+            border: 1px solid #334155 !important;
+            color: #38bdf8 !important;
+            font-family: monospace;
+        }
+
+        @media (max-width: 992px) {
+            .header-box { flex-direction: column; text-align: center; padding: 20px; min-height: auto; }
+            .auction-pro-badge { 
+                position: relative; 
+                clip-path: polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%); 
+                margin-bottom: 15px;
+                height: 50px;
+                padding: 0 30px;
+            }
+            .tournament-title-container { padding: 0; margin-bottom: 15px; }
+            .edit-tournament-btn { position: relative; right: 0; width: 100%; }
+            .tournament-name { font-size: 1.6rem; }
+            .custom-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper">
+    <div class="header-box">
+        <a href="/" class="auction-pro-badge">
+            <h2 class="badge-text">Auction Pro</h2>
+        </a>
+
+        <div class="tournament-title-container">
+            <h1 class="tournament-name">{{ tournament.name }} Dashboard</h1>
+        </div>
+
+        <a href="/edit-tournament/{{tournament.id}}" class="btn btn-outline-warning fw-bold edit-tournament-btn">
+            Edit Tournament
+        </a>
+    </div>
+
+    <div class="dotted-line"></div>
+
+    <div class="custom-grid">
+        <a href="/teams/{{tournament.id}}" class="dashboard-card shadow" style="background-color: #0d6efd;">
+            <span class="icon-box">👥</span>
+            <span class="card-title">Teams</span>
+        </a>
+        <a href="/players/{{tournament.id}}" class="dashboard-card shadow" style="background-color: #198754;">
+            <span class="icon-box">🏏</span>
+            <span class="card-title">Players</span>
+        </a>
+        <a href="/admin/pending/{{tournament.id}}" class="dashboard-card shadow" style="background-color: #0dcaf0;">
+            <span class="icon-box">📝</span>
+            <span class="card-title">Player Verification</span>
+        </a>
+        <a href="/all-squads/{{tournament.id}}" class="dashboard-card shadow" style="background-color: #6f42c1;">
+            <span class="icon-box">📋</span>
+            <span class="card-title">Squads</span>
+        </a>
+        <a href="/admin/settings" class="dashboard-card shadow" style="background-color: #343a40;">
+            <span class="icon-box">⚙️</span>
+            <span class="card-title">Bid Settings</span>
+        </a>
+        <a href="/auction-control/{{tournament.id}}" class="dashboard-card shadow" style="background-color: #dc3545;">
+            <span class="icon-box">💼</span>
+            <span class="card-title">Auction</span>
+        </a>
+        <a href="/results/{{tournament.id}}" class="dashboard-card shadow" style="background-color: #fd7e14;">
+            <span class="icon-box">📊</span>
+            <span class="card-title">Report</span>
+        </a>
+        <a href="/tshirt-details/{{tournament.id}}" class="dashboard-card shadow" style="background-color: #20c997;">
+            <span class="icon-box">👕</span>
+            <span class="card-title">T-Shirt</span>
+        </a>
+        <a href="/welcome/{{ tournament.id }}" class="dashboard-card shadow" style="background: linear-gradient(135deg, #6610f2 0%, #6f42c1 100%);" target="_blank">
+            <span class="icon-box">🎭</span>
+            <span class="card-title">Welcome</span>
+        </a>
+        <a href="/logout" class="dashboard-card shadow" style="background-color: #6c757d;">
+            <span class="icon-box">🚪</span>
+            <span class="card-title">Logout</span>
+        </a>
+    </div>
+
+    <div class="link-section shadow-lg">
+        <h5 class="text-warning mb-4 fw-bold" style="letter-spacing: 1px;">🚀 TOURNAMENT PUBLIC LINKS</h5>
+        {% set links = [
+            ('1. PLAYER REGISTRATION LINK', 'regLink', request.host_url + 'register/' + tournament.id|string),
+            ('2. AUCTION DISPLAY PAGE', 'dispLink', request.host_url + 'display/' + tournament.id|string),
+            ('3. TEAM BIDDING PAGE', 'bidLink', request.host_url + 'bidding/' + tournament.id|string)
+        ] %}
+        {% for label, input_id, url in links %}
+        <div class="mb-4">
+            <label class="text-light small mb-1 fw-bold">{{ label }}</label>
+            <div class="input-group">
+                <input type="text" id="{{ input_id }}" class="form-control copy-input" value="{{ url }}" readonly>
+                <button class="btn btn-warning fw-bold" onclick="copyToClipboard('{{ input_id }}')">📋 Copy</button>
+                <a href="{{ url }}" target="_blank" class="btn btn-info fw-bold">🔗 Open</a>
+                <a href="https://wa.me/?text={{ url }}" target="_blank" class="btn btn-success fw-bold">💬 WhatsApp</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function copyToClipboard(elementId) {
+        var copyText = document.getElementById(elementId);
+        copyText.select();
+        navigator.clipboard.writeText(copyText.value).then(() => {
+            alert("Link Copied! ✅");
+        });
+    }
+</script>
+
+</body>
+</html>

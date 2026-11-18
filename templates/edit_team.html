@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Team | {{ team.name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        body {
+            background-color: #0f172a; 
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px 10px;
+        }
+
+        .edit-card {
+            background: #1e293b !size; 
+            border-radius: 12px;
+            border: 1px solid #334155;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .card-header {
+            background: rgba(30, 41, 59, 0.5);
+            border-bottom: 1px solid #334155;
+            padding: 20px;
+        }
+
+        .form-label-custom {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .form-control {
+            background: #ffffff !important;
+            border: 1px solid #cbd5e1 !important;
+            color: #000 !important;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        /* --- COLOR PICKER STYLE --- */
+        .color-option { cursor: pointer; margin-bottom: 5px; }
+        .color-option input { display: none; }
+        .color-box {
+            display: inline-block;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            border: 2px solid #444;
+            transition: 0.3s ease;
+        }
+        .color-option input:checked + .color-box {
+            border-color: #fff;
+            transform: scale(1.1);
+            box-shadow: 0px 0px 12px rgba(255,255,255,0.4);
+        }
+
+        .card-footer {
+            background: rgba(30, 41, 59, 0.5);
+            border-top: 1px solid #334155;
+            padding: 20px;
+        }
+
+        /* --- BUTTONS --- */
+        .btn-update {
+            background: #2563eb;
+            border: none;
+            font-weight: 700;
+            padding: 12px;
+            transition: 0.3s;
+        }
+        .btn-update:hover { background: #1d4ed8; transform: translateY(-2px); }
+
+        .btn-cancel {
+            border: 1px solid #475569;
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 576px) {
+            .edit-card { border-radius: 8px; }
+            .card-header h4 { font-size: 1.1rem; }
+            .color-box { width: 32px; height: 32px; }
+            .card-footer { flex-direction: column; } /* Buttons stack on mobile */
+            .btn-update, .btn-cancel { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="edit-card shadow-lg">
+        <div class="card-header">
+            <h4 class="text-info mb-0"><i class="fas fa-edit me-2"></i> Edit Team: {{ team.name }}</h4>
+        </div>
+        
+        <form action="/edit-team/{{ team.id }}" method="POST" enctype="multipart/form-data">
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <label class="form-label-custom">Team Name *</label>
+                        <input type="text" name="name" class="form-control" value="{{ team.name }}" required>
+                    </div>
+                    
+                    <div class="col-12 mb-3">
+                        <label class="form-label-custom">Short Name *</label>
+                        <input type="text" name="short_name" class="form-control" value="{{ team.short_name }}" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom">Captain Name</label>
+                        <input type="text" name="captain" class="form-control" value="{{ team.captain }}">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom">Team Owner</label>
+                        <input type="text" name="Team_Owner" class="form-control" value="{{ team.Team_Owner }}">
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label class="form-label-custom">Update Team Logo</label>
+                        <input type="file" name="logo" class="form-control" accept="image/*">
+                        <small class="text-info mt-1 d-block">Current: {{ team.logo or 'No logo uploaded' }}</small>
+                    </div>
+
+                    <div class="col-12 mb-4">
+                        <label class="form-label-custom">Team Theme Color</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% set colors = [
+                                ('#ff6b6b', 'Red'), ('#f06292', 'Pink'), ('#4fc3f7', 'Sky'), 
+                                ('#ffd54f', 'Yellow'), ('#ffb74d', 'Orange'), ('#81c784', 'Green'),
+                                ('#ba68c8', 'Purple'), ('#4db6ac', 'Teal'), ('#a1887f', 'Brown'), ('#90a4ae', 'Grey')
+                            ] %}
+                            {% for code, name in colors %}
+                            <label class="color-option">
+                                <input type="radio" name="theme_color" value="{{ code }}" {% if team.theme_color == code %}checked{% endif %}>
+                                <span class="color-box" style="background-color: {{ code }};" title="{{ name }}"></span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-12"><hr class="border-secondary"></div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom">Team Username *</label>
+                        <input type="text" name="username" class="form-control" value="{{ team.username }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom">Team Password *</label>
+                        <input type="text" name="password" class="form-control" value="{{ team.password }}" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-update flex-grow-1">
+                    <i class="fas fa-save me-2"></i> UPDATE TEAM
+                </button>
+                <a href="/teams/{{ team.tournament_id }}" class="btn btn-cancel py-2 px-4">
+                    CANCEL
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
